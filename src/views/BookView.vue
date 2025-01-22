@@ -33,6 +33,21 @@ const deleteProduct = async () => {
   }
 };
 
+const buyBook = async () => {
+  try {
+    const confirmBuy = window.confirm('Are you sure you want to buy this book?');
+    if (!confirmBuy) {
+      return;
+    }
+    store.deleteBook(bookId);
+    toast.success(`Book bought, it cost ${state.book.price}, enjoy the reading!`);
+    router.push('/books');
+  } catch (error) {
+    console.error(error);
+    toast.error('An error occurred' + error.message);
+  }
+};
+
 </script>
 
 <template>
@@ -71,6 +86,12 @@ const deleteProduct = async () => {
 
               <p class="mb-4">{{ state.book.price }}</p>
             </div>
+
+            <button @click="buyBook"
+                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
+              >
+                Buy This Book
+              </button>
           </main>
 
           <!-- Sidebar -->
