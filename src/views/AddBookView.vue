@@ -1,8 +1,10 @@
 <script setup>
 import router from '@/router';
-import axios from 'axios';
 import { reactive } from 'vue';
 import { useToast } from 'vue-toastification';
+import { useBookStore } from '@/stores/bookStore';
+
+const store = useBookStore();
 
 const form = reactive({
   genre: 'Full-Time',
@@ -10,8 +12,8 @@ const form = reactive({
   description: '',
   author: '',
   price: '$ ',
-  pages: '',
-  stock: '',
+  pages: 0,
+  stock: 0,
   lenguage: '',
 });
 
@@ -30,21 +32,14 @@ const handleSubmit = async () => {
   }
 
     try{
-    const response = await axios.post('/api/books', newBook);
+    store.addBook(newBook);
     toast.success('Book added successfully');
     router.push(`/books/${response.data.id}`);
     } catch (error) {
     console.error(error);
-    toast.error('An error occurred');
+    toast.error('An error occurred' + error.message);
     } 
 };
-
-// try{
-//     const response = await axios.post('/api/books', newBook);
-//     router.push(`/books/${response.data.id}`);
-// } catch (error) {
-//     console.error(error);
-// } 
 
 </script>
 
@@ -113,14 +108,15 @@ const handleSubmit = async () => {
                 class="block text-gray-700 font-bold mb-2"
                 >Pages</label
               >
-              <textarea
-                id="pages"
+              <input
+                type="number"
                 v-model="form.pages"
+                id="pages"
                 name="pages"
                 class="border rounded w-full py-2 px-3"
-                rows="4"
-                placeholder="How many pages does the book have?"
-              ></textarea>
+                placeholder="Number of pages"
+                required
+              />
             </div>
 
             <div class="mb-4">

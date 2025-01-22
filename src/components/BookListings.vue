@@ -1,9 +1,8 @@
 <script setup>
 import BookListing from './BookListing.vue';
-import { ref, defineProps,onMounted, reactive } from 'vue';
+import { defineProps, reactive } from 'vue';
 import { RouterLink } from 'vue-router';
-import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
-import axios from 'axios';
+import { useBookStore } from '@/stores/bookStore';
 
 defineProps({
     limit: Number,
@@ -13,21 +12,13 @@ defineProps({
     }
 })
 
+const store = useBookStore();
+
 const state = reactive({
-    books: [],
-    isLoading: true
+    books: store.books,
+    isLoading: false
 });
 
-onMounted(async () => {
-   try{
-    const response = await axios.get('/api/books');
-    state.books = response.data;
-} catch (error) {
-    console.error(error);
-} finally {
-    state.isLoading = false;
-}
-});
 </script>
 
 <template>
@@ -36,10 +27,7 @@ onMounted(async () => {
             <h2 class="text-2xl font-bold text-blue-900 mb-6 text-center">
                 Book Listings
             </h2>
-            <div v-if="state.isLoading" class="text-center text-gray-500 py-6">
-                <PulseLoader color="#3B82F6" size="10px" />
-            </div>
-            <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
                 <BookListing 
                     v-for="book in state.books.slice(0, limit || state.books.length)" 
                     :key="book.id" 

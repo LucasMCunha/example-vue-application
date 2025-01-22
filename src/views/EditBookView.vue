@@ -3,7 +3,11 @@ import router from '@/router';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 import { reactive, onMounted } from 'vue';
+import { useBookStore } from '@/stores/bookStore';
+
 import { useToast } from 'vue-toastification';
+
+const store = useBookStore();
 
 const route = useRoute();
 
@@ -23,7 +27,7 @@ const form = reactive({
 const toast = useToast();
 
 const state = reactive({
-  book: {},
+  book: store.books.find((book) => book.id === bookId) || {},
   loading: true,
 });
 
@@ -40,19 +44,17 @@ const handleSubmit = async () => {
   }
 
     try{
-    const response = await axios.put(`/api/books/${bookId}`, updatedBook);
+    store.updateBook(bookId, updatedBook);
     toast.success('Book updated successfully');
-    router.push(`/books/${response.data.id}`);
+    router.push(`/books/${bookId}`);
     } catch (error) {
     console.error(error);
-    toast.error('An error occurred');
+    toast.error('An error occurred' + error.message);
     } 
 };
 
 onMounted(async () => {
    try{
-    const response = await axios.get(`/api/books/${bookId}`);
-    state.book = response.data;
     //populate the form with the book data
     form.genre = state.book.genre;
     form.title = state.book.title;
