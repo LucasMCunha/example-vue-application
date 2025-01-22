@@ -1,5 +1,6 @@
 import './assets/main.css'
 import 'primeicons/primeicons.css'
+import { createPinia } from 'pinia';
 import { createApp } from 'vue';
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
@@ -11,6 +12,7 @@ const app = createApp(App);
 
 app.use(router); 
 app.use(Toast);
+app.use(createPinia());
 
 app.mount('#app');
 

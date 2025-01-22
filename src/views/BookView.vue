@@ -3,7 +3,9 @@ import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
 import {reactive, defineProps, onMounted} from 'vue';
 import { useRoute, RouterLink, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import axios from 'axios';
+import { useBookStore } from '@/stores/bookStore';
+
+const store = useBookStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -12,7 +14,7 @@ const toast = useToast();
 const bookId = route.params.id;
 
 const state = reactive({
-  book: {},
+  book: store.books.find((book) => book.id === bookId) || {},
   loading: false,
 });
 
@@ -22,25 +24,14 @@ const deleteProduct = async () => {
     if (!confirmDelete) {
       return;
     }
-    await axios.delete(`/api/books/${bookId}`);
+    store.deleteBook(bookId);
     toast.success('Book deleted successfully');
     router.push('/books');
   } catch (error) {
     console.error(error);
-    toast.error('An error occurred');
+    toast.error('An error occurred' + error.message);
   }
 };
-
-onMounted(async () => {
-   try{
-    const response = await axios.get(`/api/books/${bookId}`);
-    state.book = response.data;
-} catch (error) {
-    console.error(error);
-} finally {
-    state.isLoading = false;
-}
-});
 
 </script>
 
@@ -51,7 +42,7 @@ onMounted(async () => {
           to="/books"
           class="text-blue-500 hover:text-blue-600 flex items-center"
         >
-          <i class="fas fa-arrow-left mr-2"></i> Back to Job Listings
+          <i class="fas fa-arrow-left mr-2"></i> Back to Available Books
         </RouterLink>
       </div>
     </section>
